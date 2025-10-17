@@ -40,4 +40,15 @@ function isValidEmail(email) {
   return regex.test(email)
 }
 
-
+function isBalanced(str) {
+  let result = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    if (str[i] === '(') {
+      result += 1;
+    } else if (str[i] === ')') {
+      result -= 1;
+    }
+    if (result < 0) return false;
+  }
+  return result === 0;
+}
