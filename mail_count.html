@@ -1,0 +1,33 @@
+<script src="https://dbdwvr6p7sskw.cloudfront.net/210/files/email_data_v2.js"></script>
+<script>
+  function mailCount(emailData) {
+    let allEmailArr = emailData.split('##||##');
+    let emailCount = allEmailArr.length;
+    console.log('Count of Email:', emailCount);
+
+    let dateArr = allEmailArr.map((email) =>  new Date(email.split('#/#')[2]))
+    dateArr = dateArr.sort((a, b) => a - b)
+    console.log(`Date Range: ${dateArr[0].toDateString()} - ${dateArr[dateArr.length - 1].toDateString()}`)
+  }
+
+  mailCount(emailData);
+</script>
+
+</script>
+
+
+<script src="https://dbdwvr6p7sskw.cloudfront.net/210/files/email_data_v2.js"></script>
+<script>
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  let emailText = `${emailData}`;
+  function getDates(emails) {
+    let textDates = emails.match(/Date:\s*\d{2}-\d{2}-\d{4}/g).map((date) => date.slice(6)).sort();
+    let startDate =String(new Date(textDates[0])).slice(0,15)
+    let endDate = String(new Date(textDates[textDates.length-1])).slice(0,15);
+
+    console.log(`Count of Emails: ${textDates.length}`);
+    console.log(`Date Range: ${startDate} - ${endDate}`)
+    }
+  getDates(emailText);
+</script>

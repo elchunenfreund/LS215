@@ -52,3 +52,27 @@ function isBalanced(str) {
   }
   return result === 0;
 }
+
+function isUppercase(text) {
+  return !/[a-z]/.test(text);
+}
+
+function removeVowels(arr) {
+  return arr.map((word) => word.replace(/[aeiou]/gi, ''))
+}
+
+function letterCaseCount(str) {
+  let result = {lowercase: 0, uppercase: 0, neither: 0 }
+  str.split('').forEach((char) => {
+    if (char.match(/[A-Z]/)) {
+      result.uppercase += 1
+    } else if (char.match(/[a-z]/)) {
+      result.lowercase += 1
+    } else {
+      result.neither += 1
+    }
+  })
+  return result
+}
+
+
