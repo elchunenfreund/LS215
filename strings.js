@@ -19,7 +19,6 @@ let compoundSentence = fact1 + ' and ' + fact2.toLocaleLowerCase()
 
 let pi = 22/7
 let lastIdx = pi.toString().lastIndexOf('14')
-console.log(lastIdx)
 
 let boxNumber = (365).toString();
 
@@ -75,4 +74,49 @@ function letterCaseCount(str) {
   return result
 }
 
+function wordCap(str) {
+  let result = str.toLowerCase()
+  return result.split(' ').map((word) => word[0].toUpperCase() + word.slice(1)).join(' ')
+}
 
+function swapCase(str) {
+  return str.split('').map((char) => {
+    if (char === char.toUpperCase()) return char.toLowerCase();
+    if (char === char.toLowerCase()) return char.toUpperCase();
+    return char
+  }).join('');
+}
+
+function staggeredCase(str) { 
+  let upper = true
+  return str.split('').map((char) => {
+    if (!/[a-z]/i.test(char)) {
+      return char
+    } else if (upper) {
+      upper = !upper
+      return char.toUpperCase() 
+    } else {
+      upper = !upper
+      return char.toLowerCase(); 
+    }
+}).join('')
+}
+
+function wordLengths(str) {
+  if (!str) return [];
+  return str.split(' ').map((word) => `${word} ${word.length}`)
+}
+
+function searchWord(word, text) {
+  return text.replace(new RegExp(word, 'gi'), `**${word.toUpperCase()}**`)
+}
+
+function foo(list) {
+  return list.map(function (word) {
+      return word.match(/[aeiou]/i) || [];
+    }).reduce(function (acc, letterList) {
+      return acc + letterList.length;
+    }, 0);
+}
+
+console.log(foo(['cart', 'truck', 'cart', 'train']))
