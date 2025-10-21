@@ -20,134 +20,80 @@
 // algorithem
 // fill the numbers containing commas
 // fill the numbers with ranges
-function fillNumbers(str) {
-  const result = []
-  let last_full_number = 0;
 
-  str.split(',').forEach((int) => {
+function fillNumList(str) {
+  const array  = convertInputIntoArray(str);
+  const values = replaceNumsByRealValue(array);
+  const result = convertRangeIntoNumberSequence(values);
 
-    let full_number = last_full_number;
-    const powerOfTen = 10 ** String(int).length;
-
-    if (int.indexOf(/[\-:]|\.\./)) {
-      result.push(...rangeFill(int))
-    }
-
-    full_number = Math.floor(last_full_number / powerOfTen) * powerOfTen + int;
-    while (full_number <= last_full_number) {
-    full_number += powerOfTen; // This is the step that adds the 10, 100, 1000, etc.
-    }
-
-    result.push(full_number);
-    last_full_number = full_number;
-  })
-}
-
-
-function rangeFill(str) {
-  const arr = str.split(/[\-:]|\.\./)
-  const result = []
-  for(let i = arr[0]; i <= arr[1]; i++) {
-    result.push(Number(i))
-  }
-  return result
-}
-
-function rangeFill(str, lastFullNumber) {
-  // Use the correct regex to split the string by any of the separators
-  const arr = str.split(/[\-:]|\.\./);
-  
-  // The split components are strings. Convert them to numbers.
-  const startShorthand = parseInt(arr[0], 10);
-  const endShorthand = parseInt(arr[1], 10);
-  
-  // 1. Expand the start number based on the current lastFullNumber
-  const fullStart = expandShorthand(startShorthand, lastFullNumber);
-  
-  // 2. Expand the end number based on the newly calculated fullStart number
-  const fullEnd = expandShorthand(endShorthand, fullStart);
-  
-  const result = [];
-  // Generate all numbers from the expanded start to the expanded end
-  for (let i = fullStart; i <= fullEnd; i++) {
-    result.push(i);
-  }
   return result;
 }
 
-// A helper to expand any single shorthand number (e.g., '2')
-// based on the number preceding it (last_full_number).
-// Helper to expand a shorthand string (e.g., "02") based on the last full number
-function expandShorthand(shorthandStr, lastFullNumber) {
-    // Crucial: Use the length of the string to get the correct power of 10
-    const powerOfTen = 10 ** shorthandStr.length;
-    
-    // The value of the shorthand number
-    const sh = parseInt(shorthandStr, 10);
-    
-    // Initial guess for the full number by replacing the last digits
-    let full_number = Math.floor(lastFullNumber / powerOfTen) * powerOfTen + sh;
-    
-    // Increment the magnitude (add powerOfTen) until the number is greater
-    while (full_number <= lastFullNumber) {
-        full_number += powerOfTen;
-    }
-    return full_number;
+function convertInputIntoArray(str) {
+  const string = standardizeRangeDelimiters(str);
+  return splitString(string);
 }
 
-function fillNumbers(str) {
-    const result = [];
-    let last_full_number = 0;
+function standardizeRangeDelimiters(str) {
+  return str.replace(/(\.\.|:)/g, '-');
+}
 
-    str.split(',').forEach((segment) => {
-        const trimmedSegment = segment.trim();
+function splitString(str) {
+  return str.split(',')
+            .flatMap(elem => elem.trim().match(/\d+|-/g))
+}
 
-        // Regex to split by ANY range separator: -, :, or ..
-        const shorthandSegments = trimmedSegment.split(/[\-:]|\.\./);
+function replaceNumsByRealValue(arr) {
+  let previousNum = Number(arr[0]);
+  let previousDigits;
+  let currentNum;
+  let numLength;
 
-        // --- Step 1: Handle the first number in the segment (Range or Single Shorthand) ---
-        const firstShorthandStr = shorthandSegments[0];
-        
-        // If it's the very first number (last_full_number === 0)
-        if (last_full_number === 0) {
-            last_full_number = parseInt(firstShorthandStr, 10);
-            result.push(last_full_number);
-            
-            // If it's a single shorthand (e.g., "1"), we are done with this segment.
-            if (shorthandSegments.length === 1) return;
-        } 
-        // If it's NOT the first overall number, expand the first part of the segment
-        else if (shorthandSegments.length === 1) { // Single Shorthand
-             last_full_number = expandShorthand(firstShorthandStr, last_full_number);
-             result.push(last_full_number);
-             return; // Done with single shorthand
-        } 
-        // If it's the start of a range (e.g., "64:11" after "545"), expand the range start
-        else {
-             last_full_number = expandShorthand(firstShorthandStr, last_full_number);
-             result.push(last_full_number);
-        }
+  return arr.map((numStr, idx) => {
+    if (numStr === '-') return numStr;
 
-        // --- Step 2: Handle Range Fill (Only if more than one segment exists) ---
-        if (shorthandSegments.length > 1) {
-            // Loop from the SECOND shorthand segment onwards (i=1)
-            for (let i = 1; i < shorthandSegments.length; i++) {
-                const startRange = last_full_number + 1; // Range starts AFTER the last expanded number
-                
-                // Expand the END number of the current range segment
-                const endFullNumber = expandShorthand(shorthandSegments[i], last_full_number);
-                
-                // Fill the numbers from startRange up to and including endFullNumber
-                for (let j = startRange; j <= endFullNumber; j++) {
-                    result.push(j);
-                }
-                // Update last_full_number for the next segment/range continuation
-                last_full_number = endFullNumber;
-            }
-        }
-    });
+    numLength   = numStr.length;
+    currentNum  = Number(numStr);
+    previousDigits = Number(String(previousNum).slice(-numLength));
 
-    return result;
+    let replacedNum = previousNum - previousDigits + currentNum;
+
+    if (
+      currentNum < previousDigits
+      || (currentNum === previousDigits && idx !== 0)
+    ) {
+      replacedNum += 10**numLength;
+    }
+
+    previousNum = replacedNum;
+    return replacedNum;
+  });
+}
+
+function convertRangeIntoNumberSequence(arr) {
+  let sequence = [];
+
+  arr.forEach((num, idx) => {
+    if (num === '-') return;
+
+    if (arr[idx + 1] !== '-') {
+      sequence.push(num);
+    } else {
+      let endNum = arr[idx + 2];
+      sequence = [...sequence, ...createNumberSequence(num, endNum)]
+    }
+  });
+
+  return sequence;
+}
+
+function createNumberSequence(start, end) {
+  const sequence = [];
+  for (let num = start; num < end; num += 1) {
+    sequence.push(num);
+  }
+
+  return sequence;
 }
 
 // test cases
