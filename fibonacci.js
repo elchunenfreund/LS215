@@ -1,15 +1,16 @@
-function findFibonacciIndexByLength(int) {
-  result = []
-  let index
-
+function fibonacci(int) {
+  let result = [1n, 1n]
+  let index = 2n
+  while (index < int) {
+    result.push(result[0] + result[1])
+    result.shift()
+    index += 1n
+  }
+  return result[1]
 }
 
-findFibonacciIndexByLength(2n) === 7n;    // 1 1 2 3 5 8 13
-findFibonacciIndexByLength(3n) === 12n;   // 1 1 2 3 5 8 13 21 34 55 89 144
-findFibonacciIndexByLength(10n) === 45n;
-findFibonacciIndexByLength(16n) === 74n;
-findFibonacciIndexByLength(100n) === 476n;
-findFibonacciIndexByLength(1000n) === 4782n;
-findFibonacciIndexByLength(10000n) === 47847n;
+fibonacci(20);       // 6765
+fibonacci(50);       // 12586269025
+fibonacci(75);       // 2111485077978050
 
 // The last example may take a minute or so to run.
